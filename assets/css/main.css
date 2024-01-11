@@ -1,0 +1,198 @@
+@font-face {
+  font-family: "gilroy-100";
+  src: url(../fonts/Gilroy-Thin.ttf);
+}
+@font-face {
+  font-family: "gilroy-200";
+  src: url(../fonts/Gilroy-UltraLight.ttf);
+}
+@font-face {
+  font-family: "gilroy-300";
+  src: url(../fonts/Gilroy-Light.ttf);
+}
+@font-face {
+  font-family: "gilroy-400";
+  src: url(../fonts/Gilroy-Regular.ttf);
+}
+@font-face {
+  font-family: "gilroy-500";
+  src: url(../fonts/Gilroy-Medium.ttf);
+}
+@font-face {
+  font-family: "gilroy-600";
+  src: url(../fonts/Gilroy-SemiBold.ttf);
+}
+@font-face {
+  font-family: "gilroy-700";
+  src: url(../fonts/Gilroy-Bold.ttf);
+}
+@font-face {
+  font-family: "gilroy-800";
+  src: url(../fonts/Gilroy-ExtraBold.ttf);
+}
+:root {
+  /* fonts */
+  --thin: "gilroy-100";
+  --ultraLight: "gilroy-200";
+  --light: "gilroy-300";
+  --regular: "gilroy-400";
+  --medium: "gilroy-500";
+  --semiBold: "gilroy-600";
+  --bold: "gilroy-700";
+  --extraBold: "gilroy-800";
+
+  /* colors */
+  --el-color-primary: #00a000 !important;
+  --green: #00a000;
+  --gray-5: #aeaeb2;
+  --gray-1: #fafafc;
+  --grey-1: #f2f2f7;
+  --gray-2: #e5e5ea;
+  --gray-4: #c7c7cc;
+  --gray-6: #8e8e93;
+  --dark-1: #636366;
+  --dark-3: #3a3a3c;
+  --dark-4: #2c2c2e;
+  --dark-5: #1c1c1e;
+  --input-stroke: #d1ddd1;
+  --btn-blue: #3a75ce;
+  --red: #f50000;
+  --ant-primary-color: #00ff00; /* Change this to your desired primary color */
+}
+.font-100 {
+  font-family: var(--thin);
+}
+.font-200 {
+  font-family: var(--ultraLight);
+}
+.font-300 {
+  font-family: var(--light);
+}
+.font-400 {
+  font-family: var(--regular);
+}
+.font-500 {
+  font-family: var(--medium);
+}
+.font-600 {
+  font-family: var(--semiBold);
+}
+.font-700 {
+  font-family: var(--bold);
+}
+.font-800 {
+  font-family: var(--extraBold);
+}
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--regular);
+  font-style: normal;
+  line-height: normal;
+}
+
+*:where(:not(html, iframe, canvas, img, svg, video, audio):not(svg *, symbol
+      *)) {
+  all: unset;
+  display: revert;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+a,
+button {
+  cursor: pointer;
+}
+ol,
+ul,
+menu {
+  list-style: none;
+}
+img {
+  max-inline-size: 100%;
+  max-block-size: 100%;
+}
+table {
+  border-collapse: collapse;
+}
+input,
+textarea {
+  -webkit-user-select: auto;
+}
+textarea {
+  white-space: revert;
+}
+meter {
+  -webkit-appearance: revert;
+  appearance: revert;
+}
+:where(pre) {
+  all: revert;
+}
+::placeholder {
+  color: unset;
+}
+::marker {
+  content: initial;
+}
+:where([hidden]) {
+  display: none;
+}
+:where([contenteditable]:not([contenteditable="false"])) {
+  -moz-user-modify: read-write;
+  -webkit-user-modify: read-write;
+  overflow-wrap: break-word;
+  -webkit-line-break: after-white-space;
+  -webkit-user-select: auto;
+}
+:where([draggable="true"]) {
+  -webkit-user-drag: element;
+}
+:where(dialog:modal) {
+  all: revert;
+}
+ul {
+  margin: 0;
+}
+li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+p {
+  margin: 0;
+  margin-bottom: 0;
+}
+.auth-modal .ant-modal-content {
+  padding: 40px;
+  border-radius: 12px;
+}
+.ant-modal-footer {
+  display: none;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-bottom: 0;
+}
+.ant-btn,
+.ant-typography {
+  font-family: var(--regular);
+}
+.auth-modal .el-dialog__header,
+.auth-modal .el-dialog__footer {
+  display: none;
+}
+.el-popper {
+  background-color: var(--green) !important;
+  color: #fff !important;
+}
