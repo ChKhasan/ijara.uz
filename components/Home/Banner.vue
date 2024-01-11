@@ -50,7 +50,7 @@ function onChange(_value, selected) {
           <h6 class="title font-600 text-[31px]">
             Qayerdan <span class="text-[color:var(--green)]">izlayapsiz?</span>
           </h6>
-          <div class="f search-block">
+          <div class="search-block">
             <div
               class="rounded-[8px] border-[1px] border-solid border-[color:var(--input-stroke)] search-panel"
             >

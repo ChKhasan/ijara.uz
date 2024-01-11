@@ -192,7 +192,3 @@ h6 {
 .auth-modal .el-dialog__footer {
   display: none;
 }
-.el-popper {
-  background-color: var(--green) !important;
-  color: #fff !important;
-}
