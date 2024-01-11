@@ -9,7 +9,7 @@ const filterForm = ref({
   washing_machine: false,
   need_people_count: 1,
   total_price__gte: 0,
-  total_price__lte: 100,
+  total_price__lte: 200,
   room_count: 1,
 });
 const sliderValue = ref([0, 200]);
@@ -29,8 +29,10 @@ const tabOptions = [
 ];
 onMounted(() => {
   Object.entries(route.query).forEach(([name, value]) => {
-    filterForm.value[name] = Boolean(value);
+    filterForm.value[name] = value != "false" && value != "true" ? value : Boolean(value);
   });
+  sliderValue.value[0] = filterForm.value.total_price__gte;
+  sliderValue.value[1] = filterForm.value.total_price__lte;
 });
 function filterChange(e, name) {
   // emit("filter", { value: e, name: name });
@@ -46,7 +48,12 @@ function clearFilter() {
     conditioner: false,
     partnership: false,
     washing_machine: false,
+    need_people_count: 1,
+    total_price__gte: 0,
+    total_price__lte: 200,
+    room_count: 1,
   };
+  sliderValue.value = [0, 200];
 }
 </script>
 <template>
@@ -190,7 +197,7 @@ function clearFilter() {
           <div></div>
         </div>
       </div>
-      <div class="border-b-[15px] border-[0] border-[color:var(--gray-1)] border-solid">
+      <!-- <div class="border-b-[15px] border-[0] border-[color:var(--gray-1)] border-solid">
         <h6 class="font-600 text-[16px] mb-[18px]">Shaxar markazidan uzoqligi</h6>
         <div class="flex flex-col gap-[12px]">
           <div
@@ -216,7 +223,7 @@ function clearFilter() {
             <el-checkbox />
           </div>
         </div>
-      </div>
+      </div> -->
       <div class="btns flex justify-between">
         <button class="text-[color:var(--red)] font-500 text-[17px]" @click="clearFilter">
           Tozalash
