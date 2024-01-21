@@ -11,6 +11,12 @@ const options = [
           {
             value: "xihu",
             label: "West Lake",
+            children: [
+              {
+                value: "xihu",
+                label: "West Lake",
+              },
+            ],
           },
         ],
       },

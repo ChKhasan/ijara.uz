@@ -1,15 +1,9 @@
 <script setup>
-const props = defineProps({
-  announcement: {
-    type: Object,
-    required: true,
-  },
-});
-const { announcement } = props;
+const props = defineProps(["announcement", "profile"]);
+const { announcement, profile } = props;
 </script>
 <template>
   <div class="card py-[25px] px-[24px] rounded-[18px]">
-  
     <div class="img rounded-[8px]">
       <img
         class="h-full w-full object-cover"
@@ -20,7 +14,10 @@ const { announcement } = props;
     <div class="body flex flex-col justify-between">
       <div>
         <div class="flex items-center gap-[18px]">
-          <h4 class="text-[25px] font-600 max-w-[60%]">
+          <h4
+            class="text-[25px] font-600 max-w-[60%] cursor-pointer"
+            @click="$router.push(`/announcements/${announcement?.id}`)"
+          >
             {{ announcement?.title }}
           </h4>
           <span class="text-[18px] font-600 flex items-center"
@@ -59,7 +56,7 @@ const { announcement } = props;
               fill="#D1D1D6"
             />
           </svg>
-          <p class="max-w-[60%] address"> {{ announcement?.address }}</p>
+          <p class="max-w-[60%] address">{{ announcement?.address }}</p>
         </div>
         <div class="mt-[17px] flex items-center gap-[32px]">
           <span class="flex items-center gap-[8px] text-[16px]"
@@ -140,9 +137,11 @@ const { announcement } = props;
           </h6>
         </div>
         <button
+          v-if="profile"
+          @click="$router.push(`/profile/announcements/${announcement?.id}`)"
           class="border border-solid border-[color:var(--green)] rounded-[8px] py-[14px] px-[43px] text-[16px] font-600"
         >
-          Xonalarni ko’rish
+          Tahrirlash
         </button>
       </div>
     </div>

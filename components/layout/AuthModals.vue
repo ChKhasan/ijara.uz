@@ -326,7 +326,7 @@ const errorHandle = (error) => {
             :class="{ 'pointer-events-none opacity-50': loading }"
             @click="onSubmitLogin"
           >
-            <span v-if="!loading">Kirish</span> <Loader v-else />
+            <span v-if="!loading">Kirish</span> <LoaderBtn v-else />
           </button>
         </div>
         <button
@@ -720,7 +720,7 @@ const errorHandle = (error) => {
           :class="{ 'pointer-events-none opacity-50': loading }"
           @click="openInfo = true"
         >
-          <span v-if="!loading">Tasdiqlash</span> <Loader v-else />
+          <span v-if="!loading">Tasdiqlash</span> <LoaderBtn v-else />
         </button>
         <button
           class="mx-auto font-600 text-[17px] text-[color:var(--green)] leading-[16px]"
@@ -797,7 +797,7 @@ const errorHandle = (error) => {
           :class="{ 'pointer-events-none opacity-50': loading }"
           @click="onRegister"
         >
-          <span v-if="!loading">Tasdiqlash</span> <Loader v-else />
+          <span v-if="!loading">Tasdiqlash</span> <LoaderBtn v-else />
         </button>
       </div>
       <template #footer class="mt-0">

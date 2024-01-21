@@ -7,6 +7,8 @@ const router = useRouter();
 const zoom = ref(10);
 const coords = ref([0, 0]);
 const mapCenter = ref([40.7128, -74.006]);
+const route = useRoute();
+const announcement = ref({});
 const busRoute = ref([
   { lat: 40.7128, lng: -74.006 },
   { lat: 40.7185, lng: -74.0024 },
@@ -38,7 +40,7 @@ const rules = {
   ],
 };
 
-const formState = reactive({
+const formState = ref({
   transports: [],
   images: [],
   title: "",
@@ -69,22 +71,44 @@ const handlePictureCardPreview = (uploadFile) => {
 };
 const handleAvatarSuccess = (uploadFile) => {
   if (fileListItem.value[0].response.uuid)
-    formState.images = fileListItem.value.map((item) => item.response.uuid);
+    formState.value.images = fileListItem.value.map((item) => item.response.uuid);
 };
 const onSubmit = () => {
-  formRef.value.validate().then(async () => __CREATE_ANNOUNCE(formState));
+  formRef.value.validate().then(async () => __CREATE_ANNOUNCE(formState.value));
 };
 const __CREATE_ANNOUNCE = async (formData) => {
   try {
     loading.value = true;
-    const data = await announcementApi.postAnnouncement(formData);
+    const data = await announcementApi.putAnnouncement({
+      data: formData,
+      id: route.params.id,
+    });
     dialogVisible.value = false;
     ElNotification({
       title: "Success",
-      message: "E'lon muvaffaqiyatli qo'shildi",
+      message: "E'lon muvaffaqiyatli o'zgartirildi",
       type: "success",
     });
-    router.push("/profile");
+    router.push("/profile/announcements");
+  } catch (e) {
+    errorHandle(e);
+  } finally {
+    loading.value = false;
+  }
+};
+const __DELETE_ANNOUNCE = async (formData) => {
+  try {
+    loading.value = true;
+    const data = await announcementApi.deleteAnnouncement({
+      id: route.params.id,
+    });
+    dialogVisible.value = false;
+    ElNotification({
+      title: "Success",
+      message: "E'lon muvaffaqiyatli o'chirildi",
+      type: "success",
+    });
+    router.push("/profile/announcements");
   } catch (e) {
     errorHandle(e);
   } finally {
@@ -107,8 +131,44 @@ const errorHandle = (error) => {
 function handleMapClick(e) {
   coords.value = Object.values(e.latlng);
 }
+
+async function __GET_ANNOUNCEMENT_BY_ID() {
+  try {
+    loading.value = true;
+    const data = await announcementApi.getAnnouncementById({ id: route.params.id });
+    console.log(data);
+    announcement.value = data?.data;
+    formState.value = data?.data;
+    console.log("form", formState.value.title);
+  } catch (e) {
+    errorHandle(e);
+  } finally {
+    loading.value = false;
+  }
+}
+const open = () => {
+  ElMessageBox.confirm("proxy will permanently delete the file. Continue?", "Warning", {
+    confirmButtonText: "OK",
+    cancelButtonText: "Cancel",
+    type: "warning",
+    draggable: true,
+  })
+    .then(async () => {
+      await __DELETE_ANNOUNCE();
+    })
+    .catch(() => {
+      ElMessage({
+        type: "info",
+        message: "Delete canceled",
+      });
+    });
+};
+useAsyncData("announcement", async () => {
+  return __GET_ANNOUNCEMENT_BY_ID();
+});
 onMounted(() => {
   accessToken.value = localStorage.getItem("accessToken");
+  // __GET_ANNOUNCEMENT_BY_ID();
 });
 </script>
 <template>
@@ -116,7 +176,169 @@ onMounted(() => {
     <div class="announcements py-[60px]">
       <div class="2xl:container mx-auto px-4">
         <div class="title flex justify-between items-center">
-          <h3 class="text-[60px] font-600">E'lon qo'shish</h3>
+          <h3 class="text-[60px] font-600">E'lonni o'zgartirish</h3>
+
+          <div class="flex gap-4 justify-end">
+            <button
+              class="px-[20px] whitespace-nowrap py-[10px] rounded-[12px] text-black bg-[var(--gray-1)] text-[16px] font-500 flex items-center gap-[10px]"
+              @click="$router.push('/profile/announcements')"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M11.0303 8.53033C11.3232 8.23744 11.3232 7.76256 11.0303 7.46967C10.7374 7.17678 10.2626 7.17678 9.96967 7.46967L5.96967 11.4697C5.82322 11.6161 5.75 11.8081 5.75 12C5.75 12.1017 5.77024 12.1987 5.80691 12.2871C5.84351 12.3755 5.89776 12.4584 5.96967 12.5303L9.96967 16.5303C10.2626 16.8232 10.7374 16.8232 11.0303 16.5303C11.3232 16.2374 11.3232 15.7626 11.0303 15.4697L8.31066 12.75H18C18.4142 12.75 18.75 12.4142 18.75 12C18.75 11.5858 18.4142 11.25 18 11.25H8.31066L11.0303 8.53033Z"
+                  fill="black"
+                />
+              </svg>
+              Ortga qaytish
+            </button>
+            <button
+              @click="open"
+              class="px-[20px] whitespace-nowrap py-[10px] rounded-[12px] text-[#ff0000] bg-[var(--gray-1)] text-[16px] font-500 flex items-center gap-[10px]"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24px"
+                height="24px"
+                style="
+                  width: 100%;
+                  height: 100%;
+                  transform: translate3d(0, 0, 0);
+                  content-visibility: visible;
+                "
+                viewBox="0 0 500 500"
+              >
+                <g clip-path="url(#e)">
+                  <g clip-path="url(#f)" style="display: none">
+                    <g class="primary design" style="display: none">
+                      <path class="primary" />
+                    </g>
+                    <g fill="none" class="primary design" style="display: none">
+                      <path class="primary" />
+                      <path class="primary" />
+                    </g>
+                    <g class="primary design" style="display: none">
+                      <path class="primary" />
+                    </g>
+                    <g class="primary design" mask="url(#g)" style="display: none">
+                      <path class="primary" />
+                      <path class="primary" />
+                      <path fill="none" class="primary" />
+                    </g>
+                    <g class="primary design" mask="url(#h)" style="display: none">
+                      <path class="primary" />
+                      <path fill="none" class="primary" />
+                    </g>
+                  </g>
+                  <g clip-path="url(#i)" style="display: none">
+                    <g class="primary design" style="display: none">
+                      <path class="primary" />
+                    </g>
+                    <g clip-path="url(#j)" mask="url(#k)" style="display: none">
+                      <g class="primary design" style="display: none">
+                        <path class="primary" />
+                        <path fill="none" class="primary" />
+                      </g>
+                      <g class="primary design" style="display: none">
+                        <path class="primary" />
+                        <path class="primary" />
+                        <path fill="none" class="primary" />
+                      </g>
+                      <g class="primary design" style="display: none">
+                        <path class="primary" />
+                        <path fill="none" class="primary" />
+                      </g>
+                      <g class="primary design" style="display: none">
+                        <path class="primary" />
+                        <path fill="none" class="primary" />
+                      </g>
+                    </g>
+                  </g>
+                  <g clip-path="url(#l)" style="display: none">
+                    <g fill="none" class="primary design" style="display: none">
+                      <path class="primary" />
+                      <path class="primary" />
+                    </g>
+                    <g class="primary design" style="display: none">
+                      <path class="primary" />
+                    </g>
+                    <g clip-path="url(#m)" mask="url(#n)" style="display: none">
+                      <g class="primary design" style="display: none">
+                        <path class="primary" />
+                        <path class="primary" />
+                        <path fill="none" class="primary" />
+                      </g>
+                      <g class="primary design" style="display: none">
+                        <path class="primary" />
+                        <path fill="none" class="primary" />
+                      </g>
+                    </g>
+                    <g class="primary design" style="display: none">
+                      <path class="primary" />
+                    </g>
+                  </g>
+                  <g clip-path="url(#o)" style="display: block">
+                    <g fill="none" class="primary design" style="display: none">
+                      <path class="primary" />
+                      <path class="primary" />
+                    </g>
+                    <g fill="none" class="primary design" style="display: none">
+                      <path class="primary" />
+                      <path class="primary" />
+                    </g>
+                    <g fill="none" class="primary design" style="display: none">
+                      <path class="primary" />
+                      <path class="primary" />
+                    </g>
+                    <g class="primary design" style="display: none">
+                      <path fill="none" class="primary" />
+                    </g>
+                    <g class="primary design" style="display: block">
+                      <path
+                        fill="red"
+                        d="M388.737 155.025H92.95l27.912 251.626c3.124 28.746 27.704 50.409 56.866 50.409h142.06c29.162 0 53.742-21.663 56.866-50.409l27.912-251.626h-15.83zM269.589 248.76c0-11.457 9.374-20.83 20.83-20.83 11.457 0 20.83 9.373 20.83 20.83v124.98c0 11.456-9.373 20.83-20.83 20.83-11.456 0-20.83-9.374-20.83-20.83V248.76zm-83.32 0c0-11.457 9.374-20.83 20.83-20.83 11.457 0 20.83 9.373 20.83 20.83v124.98c0 11.456-9.373 20.83-20.83 20.83-11.456 0-20.83-9.374-20.83-20.83V248.76z"
+                        class="primary"
+                      />
+                    </g>
+                    <g class="primary design" style="display: block">
+                      <path
+                        fill="red"
+                        d="M415.396 82.116h-145.81v-20.83c0-11.498-9.311-20.83-20.83-20.83-11.519 0-20.83 9.332-20.83 20.83v20.83H82.116c-11.519 0-20.83 9.332-20.83 20.83 0 11.498 9.311 20.83 20.83 20.83h333.28c11.519 0 20.83-9.332 20.83-20.83 0-11.498-9.311-20.83-20.83-20.83z"
+                        class="primary"
+                      />
+                    </g>
+                    <g class="primary design" style="display: none">
+                      <path class="primary" />
+                    </g>
+                    <g class="primary design" style="display: none">
+                      <path class="primary" />
+                    </g>
+                  </g>
+                  <g clip-path="url(#p)" style="display: none">
+                    <g fill="none" class="primary design" style="display: none">
+                      <path class="primary" />
+                      <path class="primary" />
+                    </g>
+                    <g class="primary design" style="display: none">
+                      <path fill="none" class="primary" />
+                    </g>
+                    <g class="primary design" style="display: none">
+                      <path class="primary" />
+                    </g>
+                    <g class="primary design" style="display: none">
+                      <path class="primary" />
+                    </g>
+                  </g>
+                </g>
+              </svg>
+              O'chirish
+            </button>
+          </div>
         </div>
         <div class="body mt-[30px]">
           <el-form

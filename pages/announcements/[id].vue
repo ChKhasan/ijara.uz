@@ -1,9 +1,46 @@
-<script setup></script>
+<script setup>
+import announcementApi from "@/api/announcementApi";
+const route = useRoute();
+const loading = ref(true);
+const announcement = ref({});
+async function __GET_ANNOUNCEMENTS() {
+  try {
+    loading.value = true;
+    const data = await announcementApi.getAnnouncementById({ id: route.params.id });
+    console.log(data);
+    announcement.value = data?.data;
+  } catch (e) {
+    errorHandle(e);
+  } finally {
+    loading.value = false;
+  }
+}
+const errorHandle = (error) => {
+  error.response
+    ? ElNotification({
+        title: "Error",
+        message: error.response.statusText,
+        type: "error",
+      })
+    : ElNotification({
+        title: "Error",
+        message: "Serverda xatolik",
+        type: "error",
+      });
+};
+// onMounted(() => {
+//   __GET_ANNOUNCEMENTS();
+// });
+useAsyncData("announcement", async () => {
+  return __GET_ANNOUNCEMENTS();
+});
+</script>
 <template>
-  <div class="announcement pt-[60px]">
+  <div class="announcement py-[60px]">
     <div class="2xl:container mx-auto px-4">
       <div class="back mb-[30px]">
         <button
+          @click="$router.go(-1)"
           class="bg-[var(--grey-1)] font-500 text-[18px] h-11 flex justify-center items-center rounded-xl gap-2 px-[18px]"
         >
           <svg
@@ -24,7 +61,7 @@
       <div class="head">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
-            <h1 class="font-600 text-[48px]">Farovon Khiva Summer...</h1>
+            <h1 class="font-600 text-[48px]">{{ announcement?.title }}</h1>
             <span class="flex items-center gap-1 font-600 text-[20px]"
               ><svg
                 width="32"
@@ -46,7 +83,7 @@
             <p class="text-black text-[18px] font-500">Juda yaxshi:</p>
             <span
               class="bg-[var(--green)] h-5 px-1 rounded font-400 text-[18px] flex items-center text-white"
-              >8.7</span
+              >{{ announcement?.appartment_status }}</span
             >
           </div>
         </div>
@@ -71,7 +108,7 @@
               fill="#AEAEB2"
             />
           </svg>
-          Toshkent Shaxar, Yunusobod 12
+          {{ announcement?.address }}
         </p>
       </div>
       <div class="gallery mt-8">
@@ -121,8 +158,7 @@
         <div>
           <div>
             <p class="text-[20px] text-[var(--dark-3)]">
-              Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-              Lorem Ipsum has been the industry's standard
+              {{ announcement?.description }}
             </p>
             <div class="mt-[30px]">
               <h4 class="text-[18px] font-600">Qulayliklar</h4>
@@ -152,7 +188,7 @@
               </div>
             </div>
           </div>
-          <AppInfoTab class="mt-[30px]"/>
+          <AppInfoTab class="mt-[30px]" :announcement="announcement" />
         </div>
         <AppSearch />
       </div>

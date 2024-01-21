@@ -1,6 +1,7 @@
 <script setup>
 import announcementApi from "@/api/announcementApi";
 const announcements = ref([]);
+const loading = ref(true);
 const errorHandle = (error) => {
   error.response
     ? ElNotification({
@@ -16,10 +17,13 @@ const errorHandle = (error) => {
 };
 async function __GET_ANNOUNCEMENTS() {
   try {
+    loading.value = true;
     const data = await announcementApi.getAnnouncement();
     announcements.value = data?.data;
   } catch (e) {
     errorHandle(e);
+  } finally {
+    loading.value = false;
   }
 }
 useAsyncData("announcement", async () => {
@@ -29,8 +33,11 @@ useAsyncData("announcement", async () => {
 <template>
   <div class="pb-10">
     <HomeBanner />
-    <HomeCardsSlider :announcements="announcements" />
+    <HomeCardsSlider :announcements="announcements" :loading="loading" />
   </div>
 </template>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+
+
+</style>

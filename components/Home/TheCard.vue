@@ -1,11 +1,56 @@
 <script setup>
-const props = defineProps({
-  announcement: {
-    type: Object,
-    required: true,
-  },
-});
-const { announcement } = props;
+import likeApi from "@/api/likeApi";
+import { useLikes } from "@/store/like";
+import { useAuthHandle } from "@/store/auth";
+
+const likesConfig = useLikes();
+const authConfig = useAuthHandle();
+const props = defineProps(["announcement"]);
+
+// const props = defineProps({
+//   announcement: {
+//     type: Object,
+//     required: true,
+//   },
+// });
+// const { announcement } = props;
+
+function addLike(id) {
+  authConfig.auth ? __chek_likes(id) : likesConfig.likeHandle(id);
+}
+function __chek_likes(id) {
+  const data = {
+    announcement: id,
+  };
+  likesConfig.likes.includes(id) ? __DELETE_LIKE({ id: id }) : __POST_LIKE(data);
+}
+async function __POST_LIKE(data) {
+  try {
+    await likeApi.postLike(data);
+    __GET_LIKE();
+  } catch (e) {
+    console.log(e);
+  }
+}
+async function __DELETE_LIKE(data) {
+  try {
+    await likeApi.deleteLike(data);
+    __GET_LIKE();
+  } catch (e) {
+    console.log(e);
+  }
+}
+async function __GET_LIKE() {
+  try {
+    const data = await likeApi.getLike();
+    console.log("userIds", data?.data);
+    const userLikes = data?.data.map((item) => item.announcement?.id);
+    console.log("userId", userLikes);
+    likesConfig.handleUserLikes(userLikes);
+  } catch (e) {
+    console.log(e);
+  }
+}
 </script>
 <template>
   <div class="card bg-white">
@@ -22,8 +67,26 @@ const { announcement } = props;
         src="../../assets/image/Rectangle18.png"
         alt=""
       />
-      <div class="absolute top-[18px] right-[18px]">
+      <div class="absolute top-[18px] right-[18px]" @click="addLike(announcement?.id)">
         <svg
+          v-if="likesConfig.likes.includes(announcement?.id)"
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 32 32"
+          fill="none"
+        >
+          <rect width="32" height="32" rx="4" fill="white" />
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M4.79688 12.729C4.79688 9.15318 7.82937 6.3999 11.3889 6.3999C13.2237 6.3999 14.8382 7.28991 15.9969 8.44149C17.1555 7.28991 18.77 6.3999 20.6049 6.3999C24.1644 6.3999 27.1969 9.15318 27.1969 12.729C27.1969 15.1957 26.0803 17.2726 24.6004 18.993C23.1256 20.7075 21.223 22.1465 19.5028 23.351L16.535 25.4292C16.21 25.6568 15.7838 25.6568 15.4588 25.4292L12.4909 23.351C10.7708 22.1465 8.86812 20.7075 7.39334 18.993C5.91348 17.2726 4.79688 15.1957 4.79688 12.729ZM12.3969 14.3999C11.7341 14.3999 11.1969 14.9372 11.1969 15.5999C11.1969 16.2626 11.7341 16.7999 12.3969 16.7999H19.5969C20.2596 16.7999 20.7969 16.2626 20.7969 15.5999C20.7969 14.9372 20.2596 14.3999 19.5969 14.3999H12.3969Z"
+            fill="#00A000"
+          />
+        </svg>
+
+        <svg
+          v-else
           xmlns="http://www.w3.org/2000/svg"
           width="32"
           height="32"
@@ -78,7 +141,12 @@ const { announcement } = props;
       </div>
     </div>
     <div class="body">
-      <h3 class="">{{ announcement?.title }}</h3>
+      <h3
+        class="cursor-pointer"
+        @click="$router.push(`/announcements/${announcement?.id}`)"
+      >
+        {{ announcement?.title }}
+      </h3>
       <span class="location flex gap-[12px] items-center mt-[8px]">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -153,10 +221,11 @@ const { announcement } = props;
         </p>
       </div>
       <div class="flex flex-col gap-[8px] mt-[18px]">
-       
         <div class="flex gap-[8px] items-center">
           <h6 class="flex text-[20px] gap-[4px]">
-            <span class="text-[color:var(--green)] font-500">{{announcement?.total_price}} </span>
+            <span class="text-[color:var(--green)] font-500"
+              >{{ announcement?.total_price }}
+            </span>
             UZS dan
           </h6>
           <h6 class="text-[color:var(--gray-4)] text-[14px] font-500 line-through">

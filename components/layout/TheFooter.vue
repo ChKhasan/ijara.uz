@@ -130,7 +130,7 @@
           <button
             class="bg-[color:var(--green)] py-[10px] px-[30px] rounded-[12px] text-[color:#fff] font-600 text-[16px] mb-[30px]"
           >
-            Mexmonxona qo’shish
+            E'lon qo’shish
           </button>
           <div class="footer-list">
             <h5 class="text-[color:var(--gray-4)] mb-[20px] font-600 text-[20px]">

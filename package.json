@@ -14,7 +14,9 @@
     "@nuxt/devtools": "latest",
     "@nuxtjs/tailwindcss": "^6.10.1",
     "@pinia/nuxt": "^0.5.1",
+    "dayjs-nuxt": "^2.1.9",
     "nuxt": "^3.8.2",
+    "nuxt3-leaflet": "^1.0.12",
     "sass": "^1.69.5",
     "vue": "^3.3.8",
     "vue-router": "^4.2.5"

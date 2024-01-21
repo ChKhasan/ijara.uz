@@ -1,6 +1,8 @@
 <script setup>
 const tab = ref(1);
 const emit = defineEmits(["filter", "clearFilter"]);
+const props = defineProps(["loading"]);
+
 const route = useRoute();
 const router = useRouter();
 const filterForm = ref({
@@ -9,10 +11,10 @@ const filterForm = ref({
   washing_machine: false,
   need_people_count: 1,
   total_price__gte: 0,
-  total_price__lte: 200,
+  total_price__lte: 4000000,
   room_count: 1,
 });
-const sliderValue = ref([0, 200]);
+const sliderValue = ref([0, 4000000]);
 const tabOptions = [
   {
     name: "Ixtiyoriy sozlash",
@@ -50,10 +52,10 @@ function clearFilter() {
     washing_machine: false,
     need_people_count: 1,
     total_price__gte: 0,
-    total_price__lte: 200,
+    total_price__lte: 4000000,
     room_count: 1,
   };
-  sliderValue.value = [0, 200];
+  sliderValue.value = [0, 4000000];
 }
 </script>
 <template>
@@ -85,7 +87,7 @@ function clearFilter() {
           />
         </div>
         <div class="range">
-          <el-slider v-model="sliderValue" range show-stops :max="200" />
+          <el-slider v-model="sliderValue" range :step="1000" :max="4000000" />
         </div>
       </div>
       <div
@@ -123,7 +125,7 @@ function clearFilter() {
           >
             <p class="flex text-[color:var(--dark-4)] text-[16px] gap-[8px] items-center">
               <svg
-                xmlns="http://www.w3.org/2000/svg"
+                xmlns="http://www.w3.org/40000000/svg"
                 xmlns:xlink="http://www.w3.org/1999/xlink"
                 height="18px"
                 width="18px"
@@ -226,13 +228,17 @@ function clearFilter() {
       </div> -->
       <div class="btns flex justify-between">
         <button class="text-[color:var(--red)] font-500 text-[17px]" @click="clearFilter">
-          Tozalash
+          Tozalash 
         </button>
         <button
           @click="filterSend"
           class="w-100 min-w-[240px] py-[14px] bg-[color:var(--green)] rounded-[8px] text-white font-600 flex justify-center"
+          :class="{ 'pointer-events-none opacity-50': loading }"
         >
-          Qidirish
+          <span v-if="loading">
+            <LoaderBtn />
+          </span>
+          <span v-if="!loading">Qidirish</span>
         </button>
       </div>
     </div>

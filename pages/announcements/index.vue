@@ -6,27 +6,26 @@ const loadList = ref([1, 2, 3, 4, 5]);
 const announcements = ref([]);
 const loading = ref(false);
 const tab = ref(2);
+const currentSort = ref("appartment_status");
 const sortOptions = [
   {
     name: "Eng yangilari",
     id: 1,
+    options: ["appartment_status", "appartment_status_reverse"],
   },
   {
     name: "Tavsiya etilganlar",
     id: 2,
+    options: ["price_for_one", "price_for_one_reverse"],
   },
   {
     name: "Narx bo’yicha",
     id: 3,
-  },
-  {
-    name: "Chegirmada bo’lganlar",
-    id: 4,
+    options: ["total_price", "total_price_reverse"],
   },
 ];
 
 async function filterSend(e) {
-  console.log(e);
   let query = { ...route.query };
   Object.entries(e).forEach(([name, value]) => {
     query[name] = value;
@@ -42,6 +41,7 @@ async function clearFilter() {
     path: "/announcements",
     query: {},
   });
+  currentSort.value = "appartment_status";
   __GET_ANNOUNCEMENTS();
 }
 const errorHandle = (error) => {
@@ -68,8 +68,19 @@ async function __GET_ANNOUNCEMENTS() {
     loading.value = false;
   }
 }
+function sortHandle(option) {
+  currentSort.value == option[0]
+    ? (currentSort.value = option[1])
+    : (currentSort.value = option[0]);
+  filterSend({ ordering: currentSort.value });
+}
 useAsyncData("announcement", async () => {
   return __GET_ANNOUNCEMENTS();
+});
+onMounted(() => {
+  if (route.query?.ordering) {
+    currentSort.value = route.query?.ordering;
+  }
 });
 </script>
 <template>
@@ -116,7 +127,11 @@ useAsyncData("announcement", async () => {
       <div class="applications-container grid">
         <div class="flex flex-col gap-6">
           <AppSearch />
-          <AppFilter @filter="filterSend" @clear-filter="clearFilter" />
+          <AppFilter
+            @filter="filterSend"
+            @clear-filter="clearFilter"
+            :loading="loading"
+          />
         </div>
         <div>
           <div class="flex items-center justify-between mb-[30px]">
@@ -128,12 +143,11 @@ useAsyncData("announcement", async () => {
                 v-for="sort in sortOptions"
                 :key="sort.id"
                 class="px-[20px] whitespace-nowrap py-[10px] rounded-[12px] text-[color:var(--dark-1)] text-[16px] font-500 flex items-center gap-[10px]"
-                :class="{ active: tab == sort.id }"
-                @click="tab = sort.id"
+                :class="{ active: sort.options.includes(currentSort) }"
+                @click="sortHandle(sort.options)"
               >
                 {{ sort.name }}
                 <svg
-                  v-if="tab == sort.id"
                   xmlns="http://www.w3.org/2000/svg"
                   width="18"
                   height="18"
@@ -142,14 +156,17 @@ useAsyncData("announcement", async () => {
                 >
                   <g clip-path="url(#clip0_347_11118)">
                     <path
+                      v-if="sort.options[0] == currentSort"
                       d="M8.96211 5.9625L7.90161 7.023L5.99961 5.121V15H4.49961V5.121L2.59836 7.023L1.53711 5.9625L5.24961 2.25L8.96211 5.9625Z"
                       fill="#50BFE8"
                     />
                     <path
+                      v-if="sort.options[0] == currentSort"
                       d="M8.96211 5.9625L7.90161 7.023L5.99961 5.121V15H4.49961V5.121L2.59836 7.023L1.53711 5.9625L5.24961 2.25L8.96211 5.9625Z"
                       fill="white"
                     />
                     <path
+                      v-else
                       d="M12.7496 15.75L16.4621 12.0375L15.4016 10.977L13.4996 12.879V3H11.9996L12.0004 12.879L10.0976 10.977L9.03711 12.0375L12.7496 15.75Z"
                       fill="white"
                     />
@@ -163,6 +180,7 @@ useAsyncData("announcement", async () => {
               </button>
             </div>
           </div>
+
           <div class="flex flex-col gap-[31px]" v-if="loading">
             <el-skeleton
               v-for="loadCard in loadList"
