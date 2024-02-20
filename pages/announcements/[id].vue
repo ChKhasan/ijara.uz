@@ -3,12 +3,21 @@ import announcementApi from "@/api/announcementApi";
 const route = useRoute();
 const loading = ref(true);
 const announcement = ref({});
+const url = ref(
+  "http://178.128.154.43/media/images/a3319116-4fbb-4436-8205-90291ec6e796/bbf893f792f03a54408b3b7a7ebf0jpeg.jpeg"
+);
+const srcList = ref([
+  "http://178.128.154.43/media/images/a3319116-4fbb-4436-8205-90291ec6e796/bbf893f792f03a54408b3b7a7ebf0jpeg.jpeg",
+]);
 async function __GET_ANNOUNCEMENTS() {
   try {
+    console.log("test");
     loading.value = true;
     const data = await announcementApi.getAnnouncementById({ id: route.params.id });
     console.log(data);
     announcement.value = data?.data;
+    // url.value = announcement.value?.images[0]?.image;
+    // srcList.value = announcement.value?.images.map((item) => item.image);
   } catch (e) {
     errorHandle(e);
   } finally {
@@ -111,7 +120,7 @@ useAsyncData("announcement", async () => {
           {{ announcement?.address }}
         </p>
       </div>
-      <div class="gallery mt-8">
+      <!-- <div class="gallery mt-8">
         <div class="h-[392px] gallery-grid">
           <div class="w-full h-full rounded-xl overflow-hidden">
             <img
@@ -153,7 +162,28 @@ useAsyncData("announcement", async () => {
             />
           </div>
         </div>
+      </div> -->
+      <div class="carousel mt-8">
+        <el-carousel :interval="4000" type="card" height="400px">
+          <el-carousel-item v-for="item in announcement?.images" :key="item?.id">
+            <div class="carousel-image">
+              <img class="w-full h-full object-contain" :src="item?.image" alt="" />
+            </div>
+          </el-carousel-item>
+        </el-carousel>
       </div>
+      <!-- <div>
+        <el-image
+          style="width: 100px; height: 100px"
+          :src="url"
+          :zoom-rate="1.2"
+          :max-scale="7"
+          :min-scale="0.2"
+          :preview-src-list="srcList"
+          :initial-index="4"
+          fit="cover"
+        />
+      </div> -->
       <div class="body mt-[30px]">
         <div>
           <div>
@@ -161,8 +191,15 @@ useAsyncData("announcement", async () => {
               {{ announcement?.description }}
             </p>
             <div class="mt-[30px]">
-              <h4 class="text-[18px] font-600">Qulayliklar</h4>
-              <div class="grid grid-cols-4 mt-[18px] gap-[50px]">
+              <div class="flex justify-between w-full">
+                <h4 class="text-[18px] font-600">Qulayliklar</h4>
+                <div class="flex gap-4">
+                  <el-tag type="success">Konditsioner</el-tag>
+                  <el-tag type="success">Kir yuvish mashinasi</el-tag>
+                  <el-tag type="success">Konditsioner</el-tag>
+                </div>
+              </div>
+              <!-- <div class="grid grid-cols-4 mt-[18px] gap-[50px]">
                 <ul class="flex flex-col gap-3" v-for="item in [1, 2, 3, 4]" :key="item">
                   <li
                     class="text-[12px] text-[var(--dark-5)] flex items-center gap-3"
@@ -185,7 +222,7 @@ useAsyncData("announcement", async () => {
                     >Wifi
                   </li>
                 </ul>
-              </div>
+              </div> -->
             </div>
           </div>
           <AppInfoTab class="mt-[30px]" :announcement="announcement" />
@@ -208,4 +245,19 @@ useAsyncData("announcement", async () => {
   grid-template-columns: 1fr 393px;
   gap: 20px;
 }
+:deep(.el-carousel__item) .carousel-image {
+  height: 400px;
+}
+
+:deep(.el-carousel__item:nth-child(2n)) {
+  background-color: rgba(153, 169, 191, 0.7);
+}
+
+:deep(.el-carousel__item:nth-child(2n + 1)) {
+  background-color: rgba(153, 169, 191, 0.7);
+}
+/* :deep(.el-carousel .is-active)  {
+  background-color: transparent;
+
+} */
 </style>

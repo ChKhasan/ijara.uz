@@ -1,4 +1,8 @@
 <script setup>
+const emit = defineEmits(["getData"]);
+const props = defineProps(["transports"]);
+const router = useRouter();
+const route = useRoute();
 const options = [
   {
     value: "zhejiang",
@@ -35,8 +39,39 @@ const options = [
 ];
 const value = ref([]);
 const text = ref("");
-function onChange(_value, selected) {
-  text.value = selected.map((o) => o.label).join(", ");
+const list = ref([]);
+const loading = ref(false);
+const optionsTransport = ref([]);
+onMounted(() => {
+  if (props.transports?.length > 0)
+    list.value = props.transports.map((item) => {
+      return item;
+    });
+});
+const remoteMethod = (query) => {
+  if (query) {
+    loading.value = true;
+    setTimeout(() => {
+      loading.value = false;
+      optionsTransport.value = list.value.filter((item) => {
+        return item.name.toLowerCase().includes(query.toLowerCase());
+      });
+    }, 200);
+    console.log(optionsTransport.value);
+  } else {
+    optionsTransport.value = [];
+  }
+};
+async function filterSend() {
+  let query = { ...route.query };
+
+  query.transports = value.value;
+
+  await router.replace({
+    path: "/announcements",
+    query: { ...query },
+  });
+  emit("getData");
 }
 </script>
 <template>
@@ -147,13 +182,30 @@ function onChange(_value, selected) {
             /></svg
           >Necha kishi?
         </p>
-        <el-cascader
+        <!-- <el-cascader
           class="color-black"
           v-model:value="value"
           :options="options"
           @change="onChange"
           ><span class="cursor-pointer">{{ text ? text : `Manzilni kiriting` }}</span>
-        </el-cascader>
+        </el-cascader> -->
+        <el-select
+          v-model="value"
+          multiple
+          filterable
+          remote
+          reserve-keyword
+          :remote-method="remoteMethod"
+          :loading="loading"
+          style="width: 240px"
+        >
+          <el-option
+            v-for="(item, index) in optionsTransport"
+            :key="index"
+            :label="item.name"
+            :value="item.name"
+          />
+        </el-select>
       </div>
     </div>
     <span
@@ -163,6 +215,7 @@ function onChange(_value, selected) {
       Men O’zbekiston fuqarosiman
     </span>
     <button
+      @click="filterSend"
       class="mt-[18px] w-full py-[14px] bg-[color:var(--green)] rounded-[8px] text-white font-600 flex justify-center"
     >
       Qayta qidirish

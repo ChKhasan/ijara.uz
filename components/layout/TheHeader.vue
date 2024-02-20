@@ -93,7 +93,7 @@ const addAnnounce = () => {
       </div>
       <div class="flex gap-[30px] items-center">
         <h6
-          @click="auth.auth ? addAnnounce : showModal('login')"
+          @click="addAnnounce"
           class="font-600 text-[color:var(--green)] cursor-pointer"
         >
           E'lon qo’shish
@@ -251,7 +251,7 @@ const addAnnounce = () => {
                 </li>
                 <li
                   v-if="!auth.auth"
-                  @click="showModal('visible')"
+                  @click="showModal('login')"
                   class="flex gap-[12px] cursor-pointer items-center whitespace-nowrap font-500 text-[16px] pb-[18px] border-[0] border-b border-solid border-[color:#E5E5EA]"
                 >
                   <svg
@@ -273,7 +273,7 @@ const addAnnounce = () => {
                 </li>
                 <li
                   v-if="!auth.auth"
-                  @click="showModal('login')"
+                  @click="showModal('visible')"
                   class="flex gap-[12px] cursor-pointer items-center whitespace-nowrap font-500 text-[16px] pb-[18px] border-[0] border-b border-solid border-[color:#E5E5EA]"
                 >
                   <svg

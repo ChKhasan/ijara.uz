@@ -4,16 +4,7 @@ const accessToken = ref(null);
 const loading = ref(false);
 const formRef = ref();
 const router = useRouter();
-const zoom = ref(10);
-const coords = ref([0, 0]);
-const mapCenter = ref([40.7128, -74.006]);
-const busRoute = ref([
-  { lat: 40.7128, lng: -74.006 },
-  { lat: 40.7185, lng: -74.0024 },
-  { lat: 40.7213, lng: -73.9884 },
-  { lat: 40.7198, lng: -73.9712 },
-  { lat: 40.7128, lng: -73.9662 },
-]);
+const visibleMap = ref(false);
 const rules = {
   title: [
     {
@@ -71,9 +62,10 @@ const handleAvatarSuccess = (uploadFile) => {
   if (fileListItem.value[0].response.uuid)
     formState.images = fileListItem.value.map((item) => item.response.uuid);
 };
-const onSubmit = () => {
+const onSubmit = async () => {
   formRef.value.validate().then(async () => __CREATE_ANNOUNCE(formState));
 };
+
 const __CREATE_ANNOUNCE = async (formData) => {
   try {
     loading.value = true;
@@ -91,6 +83,7 @@ const __CREATE_ANNOUNCE = async (formData) => {
     loading.value = false;
   }
 };
+
 const errorHandle = (error) => {
   error.response
     ? ElNotification({
@@ -104,12 +97,18 @@ const errorHandle = (error) => {
         type: "error",
       });
 };
-function handleMapClick(e) {
-  coords.value = Object.values(e.latlng);
-}
+
 onMounted(() => {
   accessToken.value = localStorage.getItem("accessToken");
 });
+const closeMap = () => {
+  visibleMap.value = false;
+};
+const formHandle = (obj) => {
+  formState.transports = obj.transports;
+  formState.location_x = obj.coords.value[0];
+  formState.location_y = obj.coords.value[1];
+};
 </script>
 <template>
   <ProfileLayout>
@@ -117,6 +116,24 @@ onMounted(() => {
       <div class="2xl:container mx-auto px-4">
         <div class="title flex justify-between items-center">
           <h3 class="text-[60px] font-600">E'lon qo'shish</h3>
+          <button
+            class="px-[20px] whitespace-nowrap py-[10px] rounded-[12px] text-black bg-[var(--gray-1)] text-[16px] font-500 flex items-center gap-[10px]"
+            @click="$router.push('/profile/announcements')"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M11.0303 8.53033C11.3232 8.23744 11.3232 7.76256 11.0303 7.46967C10.7374 7.17678 10.2626 7.17678 9.96967 7.46967L5.96967 11.4697C5.82322 11.6161 5.75 11.8081 5.75 12C5.75 12.1017 5.77024 12.1987 5.80691 12.2871C5.84351 12.3755 5.89776 12.4584 5.96967 12.5303L9.96967 16.5303C10.2626 16.8232 10.7374 16.8232 11.0303 16.5303C11.3232 16.2374 11.3232 15.7626 11.0303 15.4697L8.31066 12.75H18C18.4142 12.75 18.75 12.4142 18.75 12C18.75 11.5858 18.4142 11.25 18 11.25H8.31066L11.0303 8.53033Z"
+                fill="black"
+              />
+            </svg>
+            Ortga qaytish
+          </button>
         </div>
         <div class="body mt-[30px]">
           <el-form
@@ -276,7 +293,72 @@ onMounted(() => {
                   >
                     <el-input v-model="formState.room_count" placeholder="999" />
                   </el-form-item>
+
+                  <!-- <div class="flex flex-col gap-4">
+                    <p v-if="loadingBus" class="text-base font-400 text-[--dark-5]">
+                      Поиск маршрутов рядом с адресом
+                    </p>
+                    <p v-else class="text-base font-400 text-[--dark-5]">
+                      Маршруты рядом с адресом
+                    </p>
+                    <div class="flex gap-4" v-if="loadingBus">
+                      <el-skeleton
+                        v-for="loadCard in loadList"
+                        :key="loadCard"
+                        :rows="0"
+                        width="100%"
+                      />
+                    </div>
+                    <div v-else class="bus-routes">
+                      <ul class="flex gap-4 flex-wrap">
+                        <li
+                          class="w-8 h-8 flex justify-center items-center bg-[--green] text-white cursor-pointer rounded-sm"
+                          v-for="route in routes"
+                          @click="handleBusRoute(route)"
+                        >
+                          {{ route }}
+                        </li>
+                      </ul>
+                    </div>
+                  </div> -->
                 </div>
+              </div>
+              <div
+                class="flex justify-end max-w-[60%] mt-4 cursor-pointer"
+                @click="visibleMap = true"
+              >
+                <div
+                  class="h-12 w-[250px] flex items-center justify-center bg-[#3A75CE] rounded-lg text-white font-500 gap-2"
+                >
+                Haritadan joyni ko’rsatish
+                  <svg
+                    width="16"
+                    height="19"
+                    viewBox="0 0 16 19"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      clip-rule="evenodd"
+                      d="M4 7C4 4.92893 5.67893 3.25 7.75 3.25C9.8211 3.25 11.5 4.92893 11.5 7C11.5 9.0711 9.8211 10.75 7.75 10.75C5.67893 10.75 4 9.0711 4 7ZM7.75 4.75C6.5074 4.75 5.5 5.75736 5.5 7C5.5 8.2426 6.5074 9.25 7.75 9.25C8.9926 9.25 10 8.2426 10 7C10 5.75736 8.9926 4.75 7.75 4.75Z"
+                      fill="white"
+                    />
+                    <path
+                      fill-rule="evenodd"
+                      clip-rule="evenodd"
+                      d="M1.20691 6.12724C1.48067 2.80603 4.25605 0.25 7.5885 0.25H7.9125C11.245 0.25 14.0203 2.80603 14.2941 6.12724C14.4408 7.90751 13.8909 9.6753 12.7602 11.0581L9.1654 15.4545C8.4341 16.3488 7.0669 16.3488 6.3356 15.4545L2.74082 11.0581C1.61008 9.6752 1.06017 7.90751 1.20691 6.12724ZM7.5885 1.75C5.03671 1.75 2.91147 3.70726 2.70184 6.25046C2.58702 7.64343 3.0173 9.0266 3.90204 10.1086L7.4968 14.505C7.6279 14.6653 7.8731 14.6653 8.0042 14.505L11.599 10.1086C12.4837 9.0266 12.914 7.64343 12.7992 6.25046C12.5895 3.70726 10.4643 1.75 7.9125 1.75H7.5885Z"
+                      fill="white"
+                    />
+                    <path
+                      d="M3.42082 14.3353C3.60606 13.9648 3.45589 13.5143 3.08541 13.3291C2.71493 13.1438 2.26442 13.294 2.07918 13.6645L0.0791814 17.6645C-0.0370686 17.897 -0.0246384 18.1731 0.112012 18.3942C0.248672 18.6153 0.490072 18.7499 0.750002 18.7499H14.75C15.0099 18.7499 15.2513 18.6153 15.388 18.3942C15.5246 18.1731 15.5371 17.897 15.4208 17.6645L13.4208 13.6645C13.2356 13.294 12.7851 13.1438 12.4146 13.3291C12.0441 13.5143 11.8939 13.9648 12.0792 14.3353L13.5365 17.2499H1.96353L3.42082 14.3353Z"
+                      fill="white"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <!-- <div class="search">
+                <el-input v-model="search" @change="onChange" />
               </div>
               <div class="map mt-6">
                 <LMap ref="map" :zoom="zoom" :center="mapCenter" @click="handleMapClick">
@@ -286,17 +368,28 @@ onMounted(() => {
                     layer-type="base"
                     name="OpenStreetMap"
                   />
-                  <!-- <l-marker :lat-lng="coords"><l-popup>Vash marker</l-popup> </l-marker> -->
+                  <l-marker :lat-lng="coords"><l-popup>Vash marker</l-popup> </l-marker>
                   <l-polyline
                     :lat-lngs="busRoute"
-                    :color="'blue'"
+                    :color="'#219FC8'"
+                    :weight="5"
+                  ></l-polyline>
+                  <l-polyline
+                    :lat-lngs="busRoute2"
+                    :color="'#7AC335'"
                     :weight="5"
                   ></l-polyline>
                 </LMap>
-              </div>
+              </div> -->
+              <ProfileMapModal
+                :visible="visibleMap"
+                @close="closeMap"
+                @formHandle="formHandle"
+              />
             </div>
           </el-form>
-          <div class="flex justify-end mt-[65px]">
+
+          <div class="flex justify-end mt-[65px] max-w-[60%]">
             <button
               @click="onSubmit"
               class="w-[270px] h-12 rounded-[12px] bg-[var(--green)] text-white flex items-center justify-center"
@@ -312,6 +405,13 @@ onMounted(() => {
 </template>
 
 <style lang="css" scoped>
+:deep(.el-skeleton) {
+  max-width: 32px;
+}
+:deep(.el-skeleton__item) {
+  width: 100%;
+  height: 32px;
+}
 .map {
   height: 450px;
 }

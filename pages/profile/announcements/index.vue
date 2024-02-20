@@ -1,14 +1,20 @@
 <script setup>
 import announcementApi from "~/api/announcementApi";
 const announcements = ref([]);
+const route = useRoute();
 const loadList = ref([1, 2, 3, 4, 5]);
 const loading = ref(true);
-
+const totalPage = ref(0);
 async function __GET_ANNOUNCEMENTS() {
   try {
     loading.value = true;
-    const data = await announcementApi.getMyAnnouncement();
-    announcements.value = data?.data;
+    const data = await announcementApi.getMyAnnouncement({
+      params: {
+        ...route.query,
+      },
+    });
+    announcements.value = data?.data?.results;
+    totalPage.value = data?.data?.count;
   } catch (e) {
     errorHandle(e);
   } finally {
@@ -31,7 +37,7 @@ onMounted(() => {
           <div class="tab gap-[10px] flex rounded-[12px] items-center">
             <button
               class="px-[20px] whitespace-nowrap py-[10px] rounded-[12px] text-black bg-[var(--gray-1)] text-[16px] font-500 flex items-center gap-[10px]"
-              @click="$router.push('/profile/add')"
+              @click="$router.push('/profile')"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -96,6 +102,16 @@ onMounted(() => {
             :key="announcement?.id"
             :profile="true"
           />
+       
+        </div>
+        <div class="mx-auto max-w-[1200px] flex justify-center">
+        
+        <VPagination
+          :load="true"
+          class="xl:hidden mt-6"
+          :totalPage="totalPage"
+          @getData="__GET_ANNOUNCEMENTS"
+        />
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ export default {
     return await axiosInstance().post("/api/comment/", requestConfig);
   },
   async getComment(requestConfig = {}) {
-    return await axios().get("/api/comment/", requestConfig);
+    return await axiosInstance().get("/api/comment/", requestConfig);
   },
   async deleteComment(requestConfig = {}) {
     return await axiosInstance().delete(

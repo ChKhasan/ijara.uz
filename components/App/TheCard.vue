@@ -6,6 +6,13 @@ const { announcement, profile } = props;
   <div class="card py-[25px] px-[24px] rounded-[18px]">
     <div class="img rounded-[8px]">
       <img
+        v-if="announcement.images[0]?.image"
+        class="w-full h-full object-cover"
+        :src="announcement.images[0]?.image"
+        alt=""
+      />
+      <img
+      v-else
         class="h-full w-full object-cover"
         src="../../assets/image/Rectangle18.png"
         alt=""

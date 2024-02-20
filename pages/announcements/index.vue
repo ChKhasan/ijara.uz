@@ -1,12 +1,15 @@
 <script setup>
 import announcementApi from "@/api/announcementApi";
+import busRoutesApi from "~/api/busRoutesApi";
 const router = useRouter();
 const route = useRoute();
 const loadList = ref([1, 2, 3, 4, 5]);
 const announcements = ref([]);
 const loading = ref(false);
+const totalPage = ref(0);
 const tab = ref(2);
 const currentSort = ref("appartment_status");
+let transports = [];
 const sortOptions = [
   {
     name: "Eng yangilari",
@@ -60,9 +63,24 @@ const errorHandle = (error) => {
 async function __GET_ANNOUNCEMENTS() {
   try {
     loading.value = true;
-    const data = await announcementApi.getAnnouncement({ params: { ...route.query } });
-    announcements.value = data?.data;
+    const data = await announcementApi.getAnnouncement({
+      params: { ...route.query, page_size: route.query.page_size || 6 },
+    });
+    announcements.value = data?.data?.results;
+    totalPage.value = data?.data?.count;
   } catch (e) {
+    errorHandle(e);
+  } finally {
+    loading.value = false;
+  }
+}
+async function __GET_TRANSPORT() {
+  try {
+    loading.value = true;
+    const data = await busRoutesApi.getTransport();
+    transports = data?.data;
+  } catch (e) {
+    console.log(e);
     errorHandle(e);
   } finally {
     loading.value = false;
@@ -81,19 +99,19 @@ onMounted(() => {
   if (route.query?.ordering) {
     currentSort.value = route.query?.ordering;
   }
+  __GET_TRANSPORT();
 });
 </script>
 <template>
-  <div class="applications pt-[60px]">
+  <div class="applications py-[60px]">
     <div class="2xl:container mx-auto px-4">
       <div class="flex items-center justify-between mb-[30px]">
         <h1 class="font-600 text-[60px] flex items-center gap-[24px]">
           Natija:
-          <span class="text-[color:var(--green)] flex items-center">{{
-            announcements.length
-          }}</span>
+          <span class="text-[color:var(--green)] flex items-center">{{ totalPage }}</span>
         </h1>
         <button
+          @click="$router.push('/map')"
           class="bg-[color:var(--btn-blue)] text-white py-[10px] flex rounded-[8px] min-w-[250px] justify-center"
         >
           Haritada ko’rish
@@ -126,7 +144,7 @@ onMounted(() => {
       </div>
       <div class="applications-container grid">
         <div class="flex flex-col gap-6">
-          <AppSearch />
+          <AppSearch @getData="__GET_ANNOUNCEMENTS" :transports="transports" />
           <AppFilter
             @filter="filterSend"
             @clear-filter="clearFilter"
@@ -194,6 +212,14 @@ onMounted(() => {
               v-for="announcement in announcements"
               :key="announcement.id"
               :announcement="announcement"
+            />
+          </div>
+          <div class="flex justify-center mt-6">
+            <VPagination
+              :load="true"
+              class="xl:hidden"
+              :totalPage="totalPage"
+              @getData="__GET_ANNOUNCEMENTS"
             />
           </div>
         </div>
