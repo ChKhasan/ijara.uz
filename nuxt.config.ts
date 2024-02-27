@@ -15,7 +15,7 @@ export default defineNuxtConfig({
 },
   runtimeConfig: {
     public: {
-      BASE_URL: process.env.BASE_URL,
+      BASE_URL: process.env.BASE_URL || "http://178.128.154.43",
       },
   },
 });
