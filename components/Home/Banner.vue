@@ -48,7 +48,7 @@ function onChange(_value, selected) {
 <template>
   <div class="banner">
     <div class="img relative flex justify-center">
-      <img src="../../assets/image/Rectangle1.png" alt="" />
+      <img src="../../assets/image/home-banner.jpg" alt="" />
       <div class="bottom-[-85px] absolute 2xl:container">
         <div
           class="rounded-[12px] px-[30px] py-[30px] search bg-white h-[207px] flex flex-col gap-[24px]"
