@@ -15,7 +15,7 @@
   height: 24px;
 
   & .path {
-    stroke: red;
+    stroke: #fff;
     stroke-linecap: round;
     animation: dash 1.5s ease-in-out infinite;
   }
