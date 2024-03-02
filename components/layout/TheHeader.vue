@@ -28,7 +28,7 @@ const addAnnounce = () => {
     <div class="py-[20px] 2xl:container mx-auto flex justify-between px-4">
       <div class="flex gap-[40px] items-center">
         <nuxt-link to="/" class="logo text-[color:var(--green)]">logo</nuxt-link>
-        <a href="" class="flex gap-[13px] items-center">
+        <a href="tel:+998777077009" class="flex gap-[13px] items-center">
           <span
             class="flex items-center justify-center w-[43px] h-[43px] bg-[color:var(--gray-1)] rounded-full border-[color:var(--gray-2)] border-[1px] border-solid"
           >
@@ -47,10 +47,10 @@ const addAnnounce = () => {
           ></span>
           <div class="flex gap-[5px] flex-col messanger">
             <p class="font-400 text-[color:var(--gray-5)]">Murojaat uchun</p>
-            <h6 class="font-500">+998 97 628 28 82</h6>
+            <h6 class="font-500">+998 77 707 70 09</h6>
           </div>
         </a>
-        <a href="" class="flex gap-[13px] items-center">
+        <a href="https://t.me/asherzod1" target="_blank" class="flex gap-[13px] items-center">
           <span
             class="flex items-center justify-center w-[43px] h-[43px] bg-[color:var(--gray-1)] rounded-full border-[color:var(--gray-2)] border-[1px] border-solid"
           >
@@ -87,7 +87,7 @@ const addAnnounce = () => {
           ></span>
           <div class="flex gap-[5px] flex-col messanger">
             <p class="font-400 text-[color:var(--gray-5)]">Murojaat uchun</p>
-            <h6 class="font-500">+998 97 628 28 82</h6>
+            <h6 class="font-500">@asherzod1</h6>
           </div>
         </a>
       </div>
@@ -98,7 +98,7 @@ const addAnnounce = () => {
         >
           E'lon qo’shish
         </h6>
-        <div class="flex gap-[18px]">
+        <!-- <div class="flex gap-[18px]">
           <button
             class="flex items-center max-h-11 border-[1px] border-[color:var(--gray-2)] rounded-[8px] border-solid px-[10px] py-[10px] right-btns"
           >
@@ -167,7 +167,7 @@ const addAnnounce = () => {
               />
             </svg>
           </button>
-        </div>
+        </div> -->
         <div class="relative flex justify-center">
           <button
             @click="profileDrop = !profileDrop"

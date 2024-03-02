@@ -193,3 +193,7 @@ h6 {
 .auth-modal .el-dialog__footer {
   display: none;
 }
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+}

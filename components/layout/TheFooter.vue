@@ -2,7 +2,7 @@
 
 <template>
   <div class="footer bg-[color:var(--gray-1)]">
-    <div class="xl:container pt-[60px] pb-[40px] mx-auto justify-start">
+    <div class="xl:container container pt-[60px] pb-[40px] mx-auto justify-start">
       <div class="flex justify-between">
         <div class="max-w-[270px]">
           <div
@@ -146,8 +146,12 @@
         </div>
       </div>
     </div>
-    <div class="pt-[25px] pb-[20px] flex justify-center border-t-[1px] border-solid border-[color:var(--gray-2)]">
-      <p class="footer-text text-[color:var(--gray-6)] font-500 text-[16px]">Copyright © 2022 Thinkbook Inc. All rights reserved.</p>
+    <div
+      class="pt-[25px] pb-[20px] flex justify-center border-t-[1px] border-solid border-[color:var(--gray-2)]"
+    >
+      <p class="footer-text text-[color:var(--gray-6)] font-500 text-[16px]">
+        Copyright © 2022 Thinkbook Inc. All rights reserved.
+      </p>
     </div>
   </div>
 </template>

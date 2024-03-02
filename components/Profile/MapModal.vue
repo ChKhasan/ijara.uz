@@ -110,9 +110,6 @@ const __GET_LOCATICON_TRANSPORTS = async (formBusData, formMetroData) => {
       if (currentMetro) metroRoutes.push(currentMetro);
       if (currentMash) mashRoutes.push(currentMash);
     });
-    console.log("bus", busRoutes);
-    console.log("metro", metroRoutes);
-    console.log("mash", mashRoutes);
     const metroWaysData = metroRoutes.map((item) => {
       return {
         name: item.rn,
