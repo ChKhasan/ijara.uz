@@ -52,10 +52,8 @@ async function __GET_ANNOUNCEMENTS() {
         announcements.value[0].location_y,
       ];
   } catch (e) {
-    console.log(e);
     errorHandle(e);
   } finally {
-    loading.value = false;
   }
 }
 async function filterSend(e) {
@@ -77,26 +75,7 @@ const handleBusRoute = (number) => {
   };
   __GET_BUS_ROUTE(formData, number);
 };
-// const __GET_BUS_ROUTE = async (formData) => {
-//   try {
-//     const data = await busRoutesApi.getBusRoute(formData);
-//     busRoute.value = data.data.scheme.forward.split(" ").map((elem) => {
-//       return {
-//         lat: elem.split(",")[0],
-//         lng: elem.split(",")[1],
-//       };
-//     });
-//     busRoute2.value = data.data.scheme.backward.split(" ").map((elem) => {
-//       return {
-//         lat: elem.split(",")[0],
-//         lng: elem.split(",")[1],
-//       };
-//     });
-//   } catch (e) {
-//     errorHandle(e);
-//   } finally {
-//   }
-// };
+
 const __GET_BUS_ROUTE = async (formData, number) => {
   try {
     const data = await busRoutesApi.getBusRoute(formData);
@@ -114,7 +93,7 @@ const __GET_BUS_ROUTE = async (formData, number) => {
       };
     });
     let color = await topColors.filter(
-      (elem) => !selectRoutes.value.map((item) => item.color).includes(elem)
+      (elem) => !transports.value.map((item) => item.color).includes(elem)
     )[0];
     busRoutes.color = color;
     busRoutes.ri = number;
@@ -127,9 +106,9 @@ const __GET_BUS_ROUTE = async (formData, number) => {
       selectedRies.includes(elem.ri)
     );
   } catch (e) {
-    console.log(e);
     errorHandle(e);
   } finally {
+    loading.value = false;
   }
 };
 async function filterTransport(obj) {
@@ -139,6 +118,8 @@ async function filterTransport(obj) {
     if (query.transports.includes(obj.ri)) {
       query.transports = query.transports.filter((elem) => elem != obj.ri);
       selectRoutes.value = selectRoutes.value.filter((elem) => elem.ri != obj.ri);
+      let currentTransport = transports.value.find((elem) => elem.ri == obj.ri);
+      delete currentTransport.color;
     } else {
       query.transports.push(obj.ri);
     }
@@ -189,9 +170,7 @@ async function __GET_TRANSPORT() {
     loading.value = true;
     const data = await busRoutesApi.getTransport();
     transports.value = data?.data;
-    console.log(transports);
   } catch (e) {
-    console.log(e);
     errorHandle(e);
   } finally {
     loading.value = false;
@@ -205,12 +184,9 @@ const toggleBus = () => {
 };
 
 function generateRandomColor() {
-  // Generate random values for RGB components
   var r = Math.floor(Math.random() * 256);
   var g = Math.floor(Math.random() * 256);
   var b = Math.floor(Math.random() * 256);
-
-  // Construct the CSS color string
   var color = "rgb(" + r + ", " + g + ", " + b + ")";
 
   return color;
@@ -263,7 +239,7 @@ watch(
 </script>
 <template>
   <div>
-    <!-- <MapLoader /> -->
+    <MapLoader v-if="loading" />
     <div class="navbar w-full fixed top-1 flex justify-center left-0 z-[2000]">
       <ul class="px-3 py-3 rounded-xl bg-white flex gap-3">
         <li>
@@ -351,12 +327,15 @@ watch(
         <h4 class="text-black font-semibold mb-4 text-[16]">Автобусы поблизости</h4>
         <ul class="bus-list flex flex-wrap gap-2">
           <li
-            v-for="transport in transports.filter((item) => item.type == 'BUS')"
+            v-for="transport in transports
+              .filter((item) => item.type == 'BUS')
+              .sort((a, b) => Number(a.name) - Number(b.name))"
             :key="transport?.id"
             @click="filterTransport(transport)"
             class="rounded-[5px] px-1 min-w-8 h-8 flex items-center justify-center buses cursor-pointer text-[14px]"
             :class="{
               active: $route?.query?.transports?.split(',').includes(transport?.ri),
+              'pointer-events-none opacity-50': loading,
             }"
             :style="`background: ${transport?.color}`"
           >

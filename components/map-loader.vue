@@ -19,18 +19,13 @@ body {
   min-height: 100vh;
 }
 .home-section {
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
   position: fixed;
   top: 0;
   left: 0;
   width: calc(100vw + 60px);
   height: calc(100vh + 60px);
-  z-index: 20000;
-  filter: blur(40px);
-  -webkit-filter: blur(40px);
-  background-color: rgb(0, 0, 0,0.5);
+  z-index: 10000;
+  background-color: rgb(0, 0, 0,0.2);
   display: flex;
   justify-content: center;
   align-items: center;

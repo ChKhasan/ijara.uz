@@ -11,7 +11,6 @@ const srcList = ref([
 ]);
 async function __GET_ANNOUNCEMENTS() {
   try {
-    console.log("test");
     loading.value = true;
     const data = await announcementApi.getAnnouncementById({ id: route.params.id });
     console.log(data);
