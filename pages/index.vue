@@ -40,6 +40,7 @@ async function __GET_ANNOUNCEMENTS() {
 onMounted(() => {
   const AUTH_TOKEN = localStorage.getItem("accessToken");
   auth.authHandle(Boolean(AUTH_TOKEN));
+  console.log("test)
 });
 useAsyncData("announcement", async () => {
   return __GET_ANNOUNCEMENTS();
